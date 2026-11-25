@@ -1,15 +1,39 @@
-# Trabajo Práctico Final - Bases de Datos 2 (TUIA)
+# Data Warehouse y dashboards de gestión: The Drinking Company
 
-Comisión 2 - Grupo 20
+Diseño e implementación de un **Data Warehouse completo** para una empresa de bebidas ficticia, integrando cinco tipos de fuentes operacionales en un modelo dimensional y explotándolo con **dashboards interactivos en Power BI** para las gerencias.
 
-Integrantes:
-* Lucas Díaz Celauro
-* Lisandro Odisio Martinelli
-* Aldana Desire Sánchez
+**Stack:** SQL Server · T-SQL · SSIS (Integration Services) · MySQL · Power BI · modelado dimensional (Kimball)
 
-## Proyecto Data Warehouse: The Drinking Company (TDC)
+## Arquitectura
 
-Este repositorio contiene el desarrollo del Trabajo Práctico Final para la materia Bases de Datos 2 de la Tecnicatura Universitaria en Inteligencia Artificial (TUIA). El objetivo del proyecto es diseñar e implementar un Data Warehouse completo para la compañía "The Drinking Company" (TDC) a partir de sus diversos sistemas operacionales, permitiendo la elaboración de dashboards para las gerencias en Power BI.
+```text
+Fuentes operacionales          ETL (SSIS)                       Consumo
+──────────────────────         ──────────────────────────       ──────────────
+SQL Server  (ventas hist.)  ┐
+MySQL       (ventas act.)   │   Staging DB   (carga cruda)
+XML         (clientes)      ├─► Intermediate (limpieza y      ─► Data Warehouse ─► Power BI
+TXT         (productos,     │                 transformación)    (esquema estrella)
+             stock)         │
+Excel       (empleados,     ┘
+             feriados)
+```
+
+- **5 dimensiones:** fecha, cliente, empleado, grupo etario y producto.
+- **3 tablas de hechos:** facturación, detalle de facturación y stock.
+- **Orquestación:** un paquete maestro de SSIS ejecuta los paquetes de extracción y transformación en orden.
+
+![Modelo dimensional](Modelo_dimensional/Modelado_Dimensional.png)
+
+## Cómo reproducirlo
+
+1. Restaurar los backups de `Entregables/` (Staging, Intermediate y Data Warehouse) en SQL Server, o crear las bases con los scripts de [`Database_Creation_Queries/`](Database_Creation_Queries/).
+2. Abrir `TDC_Project/TDC_Project.sln` en Visual Studio con SSDT y la extensión de Integration Services, y ejecutar `Master_Pkg.dtsx`. La configuración de conexiones (incluido el driver ODBC de MySQL) está en [`Documentacion_Ingesta_SSIS.md`](Database_Creation_Queries/Documentacion_Ingesta_SSIS.md).
+3. Abrir `PowerBI_DW_TDC_grupo20_.pbix` en Power BI Desktop.
+
+## Equipo
+
+Lucas Díaz Celauro · Lisandro Odisio Martinelli · Aldana Desiré Sánchez
+Trabajo práctico final de Bases de Datos 2 (TUIA – UNR).
 
 ---
 
@@ -21,6 +45,8 @@ El proyecto está organizado en las siguientes carpetas principales, separando l
 ├── Trabajo Práctico Final - Enunciado.pdf  # Requerimientos y consignas del TP
 ├── Trabajo Práctico Final - Software.pdf   # Requisitos de instalación
 ├── .gitignore                              # Archivos ignorados por Git
+├── PowerBI_DW_TDC_grupo20_.pbix            # Dashboards interactivos en Power BI
+├── PowerBI_Queries.sql                     # Consultas sobre el DW usadas por los dashboards
 │
 ├── data/                                   # Fuentes de datos crudas (Staging Area)
 │   ├── Area_Comercializacion/              # Clientes (XML), regiones y ventas históricas/actuales
@@ -46,6 +72,5 @@ El proyecto está organizado en las siguientes carpetas principales, separando l
     ├── DataBase_TDC_Staging_DB.zip         # Backup comprimido de la BD Staging
     ├── DataBase_TDC_Intermediate.zip       # Backup comprimido de la BD Intermedia
     ├── DataBase_TDC_DataWarehouse.zip      # Backup comprimido del DW final
-    ├── SSIS_Project.zip                    # Proyecto ETL comprimido completo
-    └── TDC_Reportes.pbix                   # Tablero interactivo (Dashboards) en Power BI
+    └── SSIS_Project.zip                    # Proyecto ETL comprimido completo
 ```
