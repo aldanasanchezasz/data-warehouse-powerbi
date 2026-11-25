@@ -1,2 +1,8 @@
 .venv
 *.bak
+# Visual Studio / SSIS
+.vs/
+**/.vs/
+TDC_Project/bin/
+TDC_Project/obj/
+*.user
